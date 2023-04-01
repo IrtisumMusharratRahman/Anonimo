@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,9 +31,15 @@ public class AnonimoApiController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUpUser(@RequestBody User user){
+    public String signUpUser(@RequestBody User user){
+        String status;
         User saved = this.userRepository.save(user);
-        return ResponseEntity.ok(saved);
+        if(saved!=null){
+            status="valid";
+        }else{
+            status="invalid";
+        }
+        return status;
     }
 
     @GetMapping("/signin/{userEmail}/{userPassword}")
@@ -58,20 +62,33 @@ public class AnonimoApiController {
     }
 
     @PostMapping("/createPost")
-    public ResponseEntity<?> createPost(@RequestBody Post post){
+    public String createPost(@RequestBody Post post){
+        String status;
         Post saved = this.postRepository.save(post);
-        return ResponseEntity.ok(saved);
+        if(saved!=null){
+            status="valid";
+        }else{
+            status="invalid";
+        }
+        return status;
     }
 
     @PutMapping("/changeUserName")
-    public ResponseEntity<?> updateUserName(@RequestBody User user){
+    public String updateUserName(@RequestBody User user){
+        String status;
         User saved = this.userRepository.save(user);
-        return ResponseEntity.ok(saved);
+        if(saved!=null){
+            status="valid";
+        }else{
+            status="invalid";
+        }
+        return status;
     }
 
     @DeleteMapping("/deletePost/{postID}")
-    public void deletePost(@PathVariable String postID){
+    public String deletePost(@PathVariable String postID){
         this.postRepository.deleteById(postID);
+        return "valid";
     }
 
 
@@ -82,18 +99,26 @@ public class AnonimoApiController {
     }
 
     @PostMapping("/addComment")
-    public ResponseEntity<?> addComment(@RequestBody Comment comment){
-        Post post=new Post();
+    public String addComment(@RequestBody Comment comment){
+        Post post;
+        Post saved;
+        String status;
         Optional<Post> optional = this.postRepository.findById(comment.getPostID());
         if(optional.get() != null){
             post=optional.get();
-            List<Comment> cList = post.getComments();
-            cList.add(comment);
-            post.setComments(cList);
-            this.postRepository.save(post);
+            post.getComments().add(comment);
+            saved = this.postRepository.save(post);
+            if(saved!=null){
+                status="valid";
+            }else{
+                status="invalid";
+            }
+            
+        }else{
+            status="invalid";
         }
-        
-        return ResponseEntity.ok(post);
+
+        return status;
     }
     
 }
