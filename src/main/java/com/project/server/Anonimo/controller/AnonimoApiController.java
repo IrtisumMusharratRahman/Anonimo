@@ -99,25 +99,14 @@ public class AnonimoApiController {
     }
 
     @PostMapping("/addComment")
-    public String addComment(@RequestBody Comment comment){
-        Post post;
-        Post saved;
+    public String addComment(@RequestBody Post post){
         String status;
-        Optional<Post> optional = this.postRepository.findById(comment.getPostID());
-        if(optional.get() != null){
-            post=optional.get();
-            post.getComments().add(comment);
-            saved = this.postRepository.save(post);
-            if(saved!=null){
-                status="valid";
-            }else{
-                status="invalid";
-            }
-            
+        Post saved = this.postRepository.save(post);
+        if(saved!=null){
+            status="valid";
         }else{
             status="invalid";
-        }
-
+        }     
         return status;
     }
     
