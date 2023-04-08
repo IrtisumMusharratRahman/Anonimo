@@ -33,6 +33,13 @@ public class AnonimoApiController {
     @PostMapping("/signup")
     public String signUpUser(@RequestBody User user){
         String status;
+        List<User> users = this.userRepository.findAll();
+        for(int i=0;i<users.size();i++){
+            if(user.getUserEmail().equals(users.get(i).getUserEmail()) && user.getUserPassword().equals(users.get(i).getUserPassword())){
+                status="invalid";
+                return status;
+            }
+        }
         User saved = this.userRepository.save(user);
         if(saved!=null){
             status="valid";
